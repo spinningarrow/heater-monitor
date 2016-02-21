@@ -4,6 +4,7 @@
 unsigned long switched_on_time = millis();
 
 int photon_led = D7;
+int status_led = D0;
 int photoresistor = A0;
 int power = A5;
 
@@ -11,6 +12,7 @@ bool is_geyser_on = false;
 int ldr_value;
 
 void setup() {
+    pinMode(status_led, OUTPUT);
     pinMode(photon_led, OUTPUT);
     pinMode(photoresistor, INPUT);
     pinMode(power, OUTPUT);
@@ -18,6 +20,7 @@ void setup() {
     Spark.variable("ldr", &ldr_value, INT);
     Spark.function("led", ledToggle);
 
+    digitalWrite(status_led, LOW);
     digitalWrite(photon_led, LOW);
     digitalWrite(power, HIGH);
 }
@@ -27,6 +30,8 @@ void loop() {
 
     // Geyser is on
     if (ldr_value > THRESHOLD) {
+        digitalWrite(status_led, HIGH);
+
         if (!is_geyser_on) {
             is_geyser_on = true;
             switched_on_time = millis();
@@ -39,6 +44,7 @@ void loop() {
     }
 
     else {
+        digitalWrite(status_led, LOW);
         is_geyser_on = false;
         switched_on_time = millis();
     }
