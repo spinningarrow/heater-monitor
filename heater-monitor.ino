@@ -9,6 +9,7 @@ int photoresistor = A0;
 int power = A5;
 
 bool is_geyser_on = false;
+bool is_wait_time_reached = false;
 int ldr_value;
 
 void setup() {
@@ -38,15 +39,28 @@ void loop() {
         }
 
         else if (millis() - switched_on_time >= WAIT_TIME) {
+            is_wait_time_reached = true;
             Spark.publish("geyserStatus", "on", 60, PRIVATE);
             switched_on_time = millis();
+        }
+
+        if (is_wait_time_reached) {
+            ledToggle("on");
+            delay(500);
+
+            ledToggle("off");
+            delay(500);
         }
     }
 
     else {
         digitalWrite(status_led, LOW);
+
         is_geyser_on = false;
         switched_on_time = millis();
+
+        is_wait_time_reached = false;
+        ledToggle("off");
     }
 }
 
